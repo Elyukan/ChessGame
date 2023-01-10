@@ -38,7 +38,6 @@ class Piece(pygame.sprite.Sprite):
     
     def move(self, pos):
         self.rect.topleft = pos[0] * SQUARE_SIZE + (SQUARE_SIZE / 4), pos[1] * SQUARE_SIZE + (SQUARE_SIZE / 4)
-        print(self.rect.topleft)
     
     def kill(self):
         super().kill()

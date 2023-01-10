@@ -64,7 +64,6 @@ class Board:
                 new_pos = pos[0], pos[1] + 1
             else:
                 new_pos = pos[0], pos[1] - 1
-            print(new_pos, pos)
             new_square = self.get_square(new_pos)
             new_square.set_piece(selected_piece)
             selected_square.set_piece(None)
