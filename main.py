@@ -30,6 +30,10 @@ class Game:
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                pos = int(pos[0] / SQUARE_SIZE), int(pos[1] / SQUARE_SIZE)
+                self.board.check_allowed_moves(pos)
 
     def run(self):
         while True:
