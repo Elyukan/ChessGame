@@ -1,7 +1,8 @@
 import pygame
 from typing import Union, List, Tuple, TYPE_CHECKING
 from settings import *
-from piece import Piece, PieceColor, PieceType
+from piece import Piece, PieceType
+from color import Color
 
 
 if TYPE_CHECKING:
@@ -22,13 +23,13 @@ class Square(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos[0] * SQUARE_SIZE, pos[1] * SQUARE_SIZE
         if pos[1] <= 1:
-            self.piece = Piece(self, pos, PieceColor.BLACK, PieceType.POUND)
+            self.piece = Piece(self, pos, Color.BLACK, PieceType.POUND)
         elif pos[1] >= 6:
-            self.piece = Piece(self, pos, PieceColor.WHITE, PieceType.POUND)
+            self.piece = Piece(self, pos, Color.WHITE, PieceType.POUND)
         else:
             self.piece = None
 
-    def set_piece(self,piece: Piece):
+    def set_piece(self, piece: Piece):
         if self.piece and piece:
             print("here")
             self.piece.kill()
@@ -60,7 +61,7 @@ class Board:
     def check_allowed_moves(self, pos):
         selected_square = self.get_square(pos)
         if selected_piece := selected_square.get_piece():
-            if selected_piece.color == PieceColor.BLACK:
+            if selected_piece.color == Color.BLACK:
                 new_pos = pos[0], pos[1] + 1
             else:
                 new_pos = pos[0], pos[1] - 1
