@@ -5,6 +5,14 @@ from piece import Piece, PieceType
 from color import Color
 
 
+pieces = [
+    ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+    ["pound", "pound", "pound", "pound", "pound", "pound", "pound", "pound"], 
+    ["pound", "pound", "pound", "pound", "pound", "pound", "pound", "pound"],
+    ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+]
+
+
 if TYPE_CHECKING:
     from main import Game
 
@@ -18,14 +26,15 @@ class Square(pygame.sprite.Sprite):
         super().__init__(board.sprite_group)
         self.pos = pos
         self.image = pygame.Surface([SQUARE_SIZE, SQUARE_SIZE])
-        color = (60, 60, 60) if (pos[0] + pos[1]) % 2 == 0 else (66, 33, 0)
+        color = (217, 217, 217) if (pos[0] + pos[1]) % 2 == 0 else (40, 75, 99)
+        # color = (242, 233, 228) if (pos[0] + pos[1]) % 2 == 0 else (204, 67, 61)
         self.image.fill(color=color)
         self.rect = self.image.get_rect()
         self.rect.topleft = pos[0] * SQUARE_SIZE, pos[1] * SQUARE_SIZE
         if pos[1] <= 1:
-            self.piece = Piece(self, pos, Color.BLACK, PieceType.POUND)
+            self.piece = Piece(self, pos, Color.BLACK, PieceType[pieces[pos[1]][pos[0]].upper()])
         elif pos[1] >= 6:
-            self.piece = Piece(self, pos, Color.WHITE, PieceType.POUND)
+            self.piece = Piece(self, pos, Color.WHITE, PieceType[pieces[pos[1] - 4][pos[0]].upper()])
         else:
             self.piece = None
 

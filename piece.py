@@ -27,13 +27,13 @@ class Piece(pygame.sprite.Sprite):
         self.color = color
         self.pos = pos
         super().__init__(square.board.sprite_group)
-        self.image = pygame.Surface([SQUARE_SIZE / 2, SQUARE_SIZE / 2])
-        self.image.fill(color=self.color.value)
+        self.image = pygame.image.load(f"./sprites/pieces/{color.value}-{piece_type.value}.png")
+        self.image = pygame.transform.scale(self.image, (SQUARE_SIZE, SQUARE_SIZE))
         self.rect = self.image.get_rect()
-        self.rect.topleft = pos[0] * SQUARE_SIZE + (SQUARE_SIZE / 4), pos[1] * SQUARE_SIZE + (SQUARE_SIZE / 4)
+        self.rect.topleft = pos[0] * SQUARE_SIZE, pos[1] * SQUARE_SIZE
     
     def move(self, pos):
-        self.rect.topleft = pos[0] * SQUARE_SIZE + (SQUARE_SIZE / 4), pos[1] * SQUARE_SIZE + (SQUARE_SIZE / 4)
+        self.rect.topleft = pos[0] * SQUARE_SIZE, pos[1] * SQUARE_SIZE
         self.pos = pos
     
     def kill(self):
