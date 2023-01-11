@@ -32,9 +32,9 @@ class Square(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos[0] * SQUARE_SIZE, pos[1] * SQUARE_SIZE
         if pos[1] <= 1:
-            self.piece = Piece(self, pos, Color.BLACK, PieceType[pieces[pos[1]][pos[0]].upper()])
+            self.piece = Piece(self.board, pos, Color.BLACK, PieceType[pieces[pos[1]][pos[0]].upper()])
         elif pos[1] >= 6:
-            self.piece = Piece(self, pos, Color.WHITE, PieceType[pieces[pos[1] - 4][pos[0]].upper()])
+            self.piece = Piece(self.board, pos, Color.WHITE, PieceType[pieces[pos[1] - 4][pos[0]].upper()])
         else:
             self.piece = None
 
@@ -54,15 +54,18 @@ class Board:
     board: List[List[Square]]
 
     def __init__(self, game: "Game") -> None:
+        self.preview_moves = pygame.sprite.Group()
         self.sprite_group = pygame.sprite.LayeredUpdates()
         self.board = [[Square(self, (w, h)) for w in range(WIDTH)] for h in range(HEIGHT)]
         self.game = game
 
     def update(self):
         self.sprite_group.update()
+        self.preview_moves.update()
 
     def draw(self):
         self.sprite_group.draw(self.game.screen)
+        self.preview_moves.draw(self.game.screen)
 
     def get_square(self, pos):
         return self.board[pos[1]][pos[0]]
