@@ -44,9 +44,10 @@ class Piece(pygame.sprite.Sprite):
         print("Killed")
 
     def get_moves(self):
+        moves = []
         if self.piece_type == PieceType.POUND:
             if self.color == Color.WHITE:
-                moves = [(self.pos[0], self.pos[1] - 1)]
+                moves.extend([(self.pos[0], self.pos[1] - 1)])
                 if not self.already_moved:
                     moves.append((self.pos[0], self.pos[1] - 2))
                 if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] - 1)).get_piece():
@@ -56,7 +57,7 @@ class Piece(pygame.sprite.Sprite):
                     if piece.color == Color.BLACK:
                         moves.append((self.pos[0] + 1, self.pos[1] - 1))
             else:
-                moves = [(self.pos[0], self.pos[1] + 1)]
+                moves.extend([(self.pos[0], self.pos[1] + 1)])
                 if not self.already_moved:
                     moves.append((self.pos[0], self.pos[1] + 2))
                 if piece := self.board.get_square((self.pos[0] + 1, self.pos[1] + 1)).get_piece():
@@ -65,8 +66,8 @@ class Piece(pygame.sprite.Sprite):
                 if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] + 1)).get_piece():
                     if piece.color == Color.WHITE:
                         moves.append((self.pos[0] - 1, self.pos[1] + 1))
-        elif self.piece_type == PieceType.KNIGHT:
-            moves = [
+        if self.piece_type == PieceType.KNIGHT:
+            moves.extend([
                 (self.pos[0] + 1, self.pos[1] + 2),
                 (self.pos[0] + 1, self.pos[1] - 2),
                 (self.pos[0] - 1, self.pos[1] - 2),
@@ -75,15 +76,26 @@ class Piece(pygame.sprite.Sprite):
                 (self.pos[0] - 2, self.pos[1] - 1),
                 (self.pos[0] + 2, self.pos[1] - 1),
                 (self.pos[0] + 2, self.pos[1] + 1)
-            ]
-        elif self.piece_type == PieceType.ROOK:
-            moves = [(self.pos[0] + i, self.pos[1]) for i in range(-WIDTH, WIDTH) if i != 0]
+            ])
+        if self.piece_type in [PieceType.ROOK, PieceType.QUEEN]:
+            moves.extend([(self.pos[0] + i, self.pos[1]) for i in range(-WIDTH, WIDTH) if i != 0])
             moves.extend([(self.pos[0], self.pos[1] + i) for i in range(-HEIGHT, HEIGHT) if i != 0])
-        elif self.piece_type == PieceType.BISHOP:
-            moves = [(self.pos[0] + i, self.pos[1] + i) for i in range(-WIDTH, WIDTH) if i != 0]
+        if self.piece_type in [PieceType.BISHOP, PieceType.QUEEN]:
+            moves.extend([(self.pos[0] + i, self.pos[1] + i) for i in range(-WIDTH, WIDTH) if i != 0])
             moves.extend([(self.pos[0] - i, self.pos[1] - i) for i in range(-HEIGHT, HEIGHT) if i != 0])
             moves.extend([(self.pos[0] + i, self.pos[1] - i) for i in range(-HEIGHT, HEIGHT) if i != 0])
             moves.extend([(self.pos[0] - i, self.pos[1] + i) for i in range(-HEIGHT, HEIGHT) if i != 0])
-        else:
-            moves = []
+        if self.piece_type == PieceType.KING:
+            moves.extend(
+                [
+                    (self.pos[0] + 1, self.pos[1] + 1),
+                    (self.pos[0] + 1, self.pos[1]),
+                    (self.pos[0] + 1, self.pos[1] - 1),
+                    (self.pos[0] - 1, self.pos[1] - 1),
+                    (self.pos[0] - 1, self.pos[1] + 1),
+                    (self.pos[0] - 1, self.pos[1]),
+                    (self.pos[0], self.pos[1] + 1),
+                    (self.pos[0], self.pos[1] - 1),
+                ]
+            )
         return moves
