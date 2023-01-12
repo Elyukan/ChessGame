@@ -10,4 +10,4 @@ class MovePreview(pygame.sprite.Sprite):
         self.image = pygame.Surface([SQUARE_SIZE / 4, SQUARE_SIZE / 4])
         self.image.fill(color="orange")
         self.rect = self.image.get_rect()
-        self.rect.topleft = pos[0] * SQUARE_SIZE + (SQUARE_SIZE/2.6), pos[1] * SQUARE_SIZE + (SQUARE_SIZE/2.6)
+        self.rect.center = pos[0] * SQUARE_SIZE + (SQUARE_SIZE/2), pos[1] * SQUARE_SIZE + (SQUARE_SIZE/2)
