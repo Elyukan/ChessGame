@@ -35,7 +35,7 @@ class Game:
         old_selected_square = self.player_to_play.get_selected_square()
         selected_piece = old_selected_square.get_piece()
         piece_of_new_selected_square = selected_square.get_piece()
-        if selected_square != old_selected_square and (not piece_of_new_selected_square or selected_piece.color != piece_of_new_selected_square.color):
+        if selected_square != old_selected_square and (not piece_of_new_selected_square or selected_piece.color != piece_of_new_selected_square.color) and selected_square.pos in self.player_to_play.allowed_moves:
             selected_piece = old_selected_square.get_piece()
             selected_square.set_piece(selected_piece)
             old_selected_square.set_piece(None)

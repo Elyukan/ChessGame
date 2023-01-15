@@ -16,17 +16,19 @@ class Player:
         self.color = color
         self.selected_square = None
         self.turn = 1
+        self.allowed_moves = []
 
     def select_square(self, square: Square):
         self.selected_square = square
         print(self.selected_square.pos)
-        moves = self.selected_square.get_piece().get_moves()
-        for move in moves:
+        self.allowed_moves = self.board.check_allowed_moves(self.selected_square.get_piece())
+        for move in self.allowed_moves:
             MovePreview(self.board, move)
 
     def unselect_square(self):
         self.selected_square = None
         self.board.preview_moves.empty()
+        self.allowed_moves = []
 
     def get_selected_square(self):
         return self.selected_square

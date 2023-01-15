@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from typing import Union, List, Tuple, TYPE_CHECKING
 from settings import *
 from piece import Piece, PieceType
@@ -70,14 +71,51 @@ class Board:
     def get_square(self, pos):
         return self.board[pos[1]][pos[0]]
 
-    def check_allowed_moves(self, pos):
-        selected_square = self.get_square(pos)
-        if selected_piece := selected_square.get_piece():
-            if selected_piece.color == Color.BLACK:
-                new_pos = pos[0], pos[1] + 1
+    def check_if_piece_between_pos_and_piece(self, pos, piece: Piece):
+        dx = pos[0] - piece.pos[0]
+        dy = pos[1] - piece.pos[1]
+        piece_pos = np.array(piece.pos)
+        a_pos = np.array(pos)
+        if abs(dx) == abs(dy):
+            if dx > 0 and dy > 0: # bas droite
+                v_pos = np.array([-1, -1])
+            elif dx > 0 and dy < 0: # haut droite
+                v_pos = np.array([-1, 1])
+            elif dx < 0 and dy > 0: # bas gauche
+                v_pos = np.array([1, -1])
+            elif dx < 0 and dy < 0: # haut gauche
+                v_pos = np.array([1, 1])
+            # print("diag", pos)
+        elif dx == 0:
+            if dy > 0:
+                v_pos = np.array([0, -1])
             else:
-                new_pos = pos[0], pos[1] - 1
-            new_square = self.get_square(new_pos)
-            new_square.set_piece(selected_piece)
-            selected_square.set_piece(None)
+                v_pos = np.array([0, 1])
+            # print("verti", pos)
+        elif dy == 0:
+            if dx > 0:
+                v_pos = np.array([-1, 0])
+            else:
+                v_pos = np.array([1, 0])
+        else:
+            return False
+        while not np.array_equal(piece_pos, a_pos):
+            if self.get_square(list(a_pos)).get_piece():
+                return True
+            a_pos += v_pos
+        return False
 
+    def check_allowed_moves(self, piece: Piece):
+        allowed_moves: List = []
+        moves = piece.get_moves()
+        for move in moves:
+            if not 0 <= move[0] <= 7 or not 0 <= move[1] <= 7:
+                continue
+            if not self.check_if_piece_between_pos_and_piece(move, piece):
+                if new_piece := self.get_square(move).get_piece():
+                    if not new_piece.color == piece.color:
+                        allowed_moves.append(move)
+                else:
+                    allowed_moves.append(move)
+            
+        return allowed_moves
