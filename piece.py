@@ -50,22 +50,26 @@ class Piece(pygame.sprite.Sprite):
                 moves.extend([(self.pos[0], self.pos[1] - 1)])
                 if not self.already_moved:
                     moves.append((self.pos[0], self.pos[1] - 2))
-                if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] - 1)).get_piece():
-                    if piece.color == Color.BLACK:
-                        moves.append((self.pos[0] - 1, self.pos[1] - 1))
-                if piece := self.board.get_square((self.pos[0] + 1, self.pos[1] - 1)).get_piece():
-                    if piece.color == Color.BLACK:
-                        moves.append((self.pos[0] + 1, self.pos[1] - 1))
+                if 0 <= self.pos[0] - 1 <= 7 and 0 <= self.pos[1] - 1 <= 7:
+                    if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] - 1)).get_piece():
+                        if piece.color == Color.BLACK:
+                            moves.append((self.pos[0] - 1, self.pos[1] - 1))
+                if 0 <= self.pos[0] + 1 <= 7 and 0 <= self.pos[1] - 1 <= 7:
+                    if piece := self.board.get_square((self.pos[0] + 1, self.pos[1] - 1)).get_piece():
+                        if piece.color == Color.BLACK:
+                            moves.append((self.pos[0] + 1, self.pos[1] - 1))
             else:
                 moves.extend([(self.pos[0], self.pos[1] + 1)])
                 if not self.already_moved:
                     moves.append((self.pos[0], self.pos[1] + 2))
-                if piece := self.board.get_square((self.pos[0] + 1, self.pos[1] + 1)).get_piece():
-                    if piece.color == Color.WHITE:
-                        moves.append((self.pos[0] + 1, self.pos[1] + 1))
-                if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] + 1)).get_piece():
-                    if piece.color == Color.WHITE:
-                        moves.append((self.pos[0] - 1, self.pos[1] + 1))
+                if 0 <= self.pos[0] + 1 <= 7 and 0 <= self.pos[1] + 1 <= 7:
+                    if piece := self.board.get_square((self.pos[0] + 1, self.pos[1] + 1)).get_piece():
+                        if piece.color == Color.WHITE:
+                            moves.append((self.pos[0] + 1, self.pos[1] + 1))
+                if 0 <= self.pos[0] - 1 <= 7 and 0 <= self.pos[1] + 1 <= 7:
+                    if piece := self.board.get_square((self.pos[0] - 1, self.pos[1] + 1)).get_piece():
+                        if piece.color == Color.WHITE:
+                            moves.append((self.pos[0] - 1, self.pos[1] + 1))
         if self.piece_type == PieceType.KNIGHT:
             moves.extend([
                 (self.pos[0] + 1, self.pos[1] + 2),

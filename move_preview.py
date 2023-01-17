@@ -3,6 +3,8 @@ from board import Board
 from settings import *
 
 
+#TODO: Faire une class Move qui affiche et dis c'est un roque, une prise ou juste un deplacement
+
 class MovePreview(pygame.sprite.Sprite):
     def __init__(self, board: Board, pos) -> None:
         super().__init__(board.preview_moves)

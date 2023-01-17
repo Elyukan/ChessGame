@@ -18,10 +18,10 @@ class Player:
         self.turn = 1
         self.allowed_moves = []
 
-    def select_square(self, square: Square):
+    def select_square(self, square: Square) -> None:
         self.selected_square = square
         print(self.selected_square.pos)
-        self.allowed_moves = self.board.check_allowed_moves(self.selected_square.get_piece())
+        self.allowed_moves = self.board.check_allowed_moves(self)
         for move in self.allowed_moves:
             MovePreview(self.board, move)
 

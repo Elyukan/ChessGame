@@ -5,6 +5,9 @@ from settings import *
 from piece import Piece, PieceType
 from color import Color
 
+if TYPE_CHECKING:
+    from player import Player
+
 
 pieces = [
     ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
@@ -17,6 +20,7 @@ pieces = [
 if TYPE_CHECKING:
     from main import Game
 
+#TODO: Faire en sorte que quand la case est selectionnée, elle change de couleur
 
 class Square(pygame.sprite.Sprite):
     piece: Union[Piece, None]
@@ -39,7 +43,7 @@ class Square(pygame.sprite.Sprite):
         else:
             self.piece = None
 
-    def set_piece(self, piece: Piece):
+    def set_piece(self, piece: Piece) -> None:
         if self.piece and piece:
             print("here")
             self.piece.kill()
@@ -47,7 +51,7 @@ class Square(pygame.sprite.Sprite):
             piece.move(self.pos)
         self.piece = piece
 
-    def get_piece(self):
+    def get_piece(self) -> Union[Piece, None]:
         return self.piece
 
 
@@ -60,63 +64,80 @@ class Board:
         self.board = [[Square(self, (w, h)) for w in range(WIDTH)] for h in range(HEIGHT)]
         self.game = game
 
-    def update(self):
+    def update(self) -> None:
         self.sprite_group.update()
         self.preview_moves.update()
 
-    def draw(self):
+    def draw(self) -> None:
         self.sprite_group.draw(self.game.screen)
         self.preview_moves.draw(self.game.screen)
 
-    def get_square(self, pos):
+    def get_square(self, pos) -> Square:
         return self.board[pos[1]][pos[0]]
 
-    def check_if_piece_between_pos_and_piece(self, pos, piece: Piece):
+    def check_if_piece_between_pos_and_piece(self, pos: Tuple[int, int], piece: Piece) -> bool:
+        if piece.piece_type == PieceType.KNIGHT:
+            return False
         dx = pos[0] - piece.pos[0]
         dy = pos[1] - piece.pos[1]
         piece_pos = np.array(piece.pos)
-        a_pos = np.array(pos)
+        target_pos = np.array(pos)
         if abs(dx) == abs(dy):
             if dx > 0 and dy > 0: # bas droite
-                v_pos = np.array([-1, -1])
-            elif dx > 0 and dy < 0: # haut droite
-                v_pos = np.array([-1, 1])
-            elif dx < 0 and dy > 0: # bas gauche
-                v_pos = np.array([1, -1])
-            elif dx < 0 and dy < 0: # haut gauche
                 v_pos = np.array([1, 1])
-            # print("diag", pos)
+            elif dx > 0 and dy < 0: # haut droite
+                v_pos = np.array([1, -1])
+            elif dx < 0 and dy > 0: # bas gauche
+                v_pos = np.array([-1, 1])
+            elif dx < 0 and dy < 0: # haut gauche
+                v_pos = np.array([-1, -1])
         elif dx == 0:
             if dy > 0:
-                v_pos = np.array([0, -1])
-            else:
                 v_pos = np.array([0, 1])
-            # print("verti", pos)
+            else:
+                v_pos = np.array([0, -1])
         elif dy == 0:
             if dx > 0:
-                v_pos = np.array([-1, 0])
-            else:
                 v_pos = np.array([1, 0])
+            else:
+                v_pos = np.array([-1, 0])
         else:
             return False
-        while not np.array_equal(piece_pos, a_pos):
-            if self.get_square(list(a_pos)).get_piece():
+        is_piece = False
+        while not np.array_equal(piece_pos, target_pos):
+            piece_pos += v_pos
+            if is_piece:
                 return True
-            a_pos += v_pos
+            if self.get_square(list(piece_pos)).get_piece():
+                is_piece = True
         return False
 
-    def check_allowed_moves(self, piece: Piece):
+    def check_if_grand_castle(self, player: "Player"):
+        ...
+
+    def check_if_small_castle(self, player: "Player"):
+        ...
+
+    def check_allowed_moves(self, player: "Player") -> Set:
         allowed_moves: Set = set()
+        piece: Piece = player.selected_square.get_piece()
         moves = piece.get_moves()
         for move in moves:
             if not 0 <= move[0] <= 7 or not 0 <= move[1] <= 7:
                 continue
-            if not self.check_if_piece_between_pos_and_piece(move, piece):
-                if new_piece := self.get_square(move).get_piece():
-                    if not new_piece.color == piece.color:
-                        print(move)
-                        allowed_moves.add(move)
-                else:
+            if self.check_if_piece_between_pos_and_piece(move, piece):
+                continue
+            elif new_piece := self.get_square(move).get_piece():
+                if piece.piece_type == PieceType.POUND:
+                    if new_piece.pos[0] == piece.pos[0] and (new_piece.pos[1] - 1 == piece.pos[1] or new_piece.pos[1] + 1 == piece.pos[1]):
+                        continue
+                if not new_piece.color == piece.color:
                     allowed_moves.add(move)
-            
+            else:
+                allowed_moves.add(move)
+        if piece.piece_type == PieceType.KING:
+            ...
+        #TODO: Check si la piece est clouée
+
+        #TODO: Check si le roi est en echec
         return allowed_moves
