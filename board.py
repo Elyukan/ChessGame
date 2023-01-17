@@ -4,6 +4,7 @@ from typing import Set, Union, List, Tuple, TYPE_CHECKING
 from settings import *
 from piece import Piece, PieceType
 from color import Color
+from move import MoveType
 
 if TYPE_CHECKING:
     from player import Player
@@ -112,14 +113,28 @@ class Board:
                 is_piece = True
         return False
 
-    def check_if_grand_castle(self, player: "Player"):
+    def add_castle_moves(self, player: "Player") -> List:
+        castle_moves = []
+        if self.check_if_queenside_castle(player):
+            if player.color == Color.BLACK:
+                castle_moves.append({"pos": (2, 0), "type": MoveType.QUEENSIDE_CASTLE})
+            elif player.color == Color.WHITE:
+                castle_moves.append({"pos": (2, 0), "type": MoveType.QUEENSIDE_CASTLE})
+        if self.check_if_kingside_castle(player):
+            if player.color == Color.BLACK:
+                castle_moves.append({"pos": (2, 0), "type": MoveType.KINGSIDE_CASTLE})
+            elif player.color == Color.WHITE:
+                castle_moves.append({"pos": (2, 0), "type": MoveType.KINGSIDE_CASTLE})
+        return castle_moves
+
+    def check_if_queenside_castle(self, player: "Player") -> bool:
         ...
 
-    def check_if_small_castle(self, player: "Player"):
+    def check_if_kingside_castle(self, player: "Player") -> bool:
         ...
 
     def check_allowed_moves(self, player: "Player") -> Set:
-        allowed_moves: Set = set()
+        allowed_moves: List = []
         piece: Piece = player.selected_square.get_piece()
         moves = piece.get_moves()
         for move in moves:
@@ -132,11 +147,11 @@ class Board:
                     if new_piece.pos[0] == piece.pos[0] and (new_piece.pos[1] - 1 == piece.pos[1] or new_piece.pos[1] + 1 == piece.pos[1]):
                         continue
                 if not new_piece.color == piece.color:
-                    allowed_moves.add(move)
+                    allowed_moves.append({"pos": move, "type": MoveType.TAKE})
             else:
-                allowed_moves.add(move)
+                allowed_moves.append({"pos": move, "type": MoveType.MOVE})
         if piece.piece_type == PieceType.KING:
-            ...
+            allowed_moves.extend(self.add_castle_moves(player))
         #TODO: Check si la piece est clouée
 
         #TODO: Check si le roi est en echec
