@@ -1,7 +1,7 @@
 import pygame
 from color import Color
 from board import Square, Board
-from typing import List, Union
+from typing import Dict, List, Union
 from move import Move, MoveType
 
 
@@ -21,8 +21,9 @@ class Player:
 
     def select_square(self, square: Square) -> None:
         self.selected_square = square
-        print(self.selected_square.pos)
+        # print(self.selected_square.pos)
         self.allowed_moves = self.board.check_allowed_moves(self)
+        # print(self.allowed_moves)
         for move in self.allowed_moves:
             Move(self.board, move["pos"], move["type"])
 
@@ -38,11 +39,14 @@ class Player:
     def end_turn(self):
         self.turn += 1
 
-    def check_if_pos_in_allowed_moves(self, pos) -> bool:
+    def get_allowed_move(self, pos) -> Dict:
         if not self.moves_regarding_pos:
             for move in self.allowed_moves:
                 self.moves_regarding_pos[move["pos"]] = move
-        return bool(self.moves_regarding_pos.get(pos, False))
+        return self.moves_regarding_pos.get(pos, False)
+
+    def check_if_pos_in_allowed_moves(self, pos) -> bool:
+        return bool(self.get_allowed_move(pos))
 
 
     # def set_allowed_moves(self):

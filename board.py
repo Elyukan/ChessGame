@@ -113,25 +113,49 @@ class Board:
                 is_piece = True
         return False
 
-    def add_castle_moves(self, player: "Player") -> List:
+    def add_castle_moves(self, player: "Player", piece: Piece) -> List:
         castle_moves = []
-        if self.check_if_queenside_castle(player):
+        if self.check_if_queenside_castle(player, piece):
             if player.color == Color.BLACK:
                 castle_moves.append({"pos": (2, 0), "type": MoveType.QUEENSIDE_CASTLE})
             elif player.color == Color.WHITE:
-                castle_moves.append({"pos": (2, 0), "type": MoveType.QUEENSIDE_CASTLE})
-        if self.check_if_kingside_castle(player):
+                castle_moves.append({"pos": (2, 7), "type": MoveType.QUEENSIDE_CASTLE})
+        if self.check_if_kingside_castle(player, piece):
             if player.color == Color.BLACK:
-                castle_moves.append({"pos": (2, 0), "type": MoveType.KINGSIDE_CASTLE})
+                castle_moves.append({"pos": (6, 0), "type": MoveType.KINGSIDE_CASTLE})
             elif player.color == Color.WHITE:
-                castle_moves.append({"pos": (2, 0), "type": MoveType.KINGSIDE_CASTLE})
+                castle_moves.append({"pos": (6, 7), "type": MoveType.KINGSIDE_CASTLE})
         return castle_moves
 
-    def check_if_queenside_castle(self, player: "Player") -> bool:
-        ...
+    def check_if_queenside_castle(self, player: "Player", king: Piece) -> bool:
+        if king.already_moved:
+            return False
+        if player.color == Color.BLACK:
+            rook_pos = (0, 0)
+        else:
+            rook_pos = (0, 7)
+        if not (rook := self.get_square(rook_pos).get_piece()):
+            return False
+        if rook.already_moved:
+            return False
+        if self.check_if_piece_between_pos_and_piece(rook_pos, king):
+            return False
+        return True
 
-    def check_if_kingside_castle(self, player: "Player") -> bool:
-        ...
+    def check_if_kingside_castle(self, player: "Player", king: Piece) -> bool:
+        if king.already_moved:
+            return False
+        if player.color == Color.BLACK:
+            rook_pos = (7, 0)
+        else:
+            rook_pos = (7, 7)
+        if not (rook := self.get_square(rook_pos).get_piece()):
+            return False
+        if rook.already_moved:
+            return False
+        if self.check_if_piece_between_pos_and_piece(rook_pos, king):
+            return False
+        return True
 
     def check_allowed_moves(self, player: "Player") -> Set:
         allowed_moves: List = []
@@ -151,7 +175,7 @@ class Board:
             else:
                 allowed_moves.append({"pos": move, "type": MoveType.MOVE})
         if piece.piece_type == PieceType.KING:
-            allowed_moves.extend(self.add_castle_moves(player))
+            allowed_moves.extend(self.add_castle_moves(player, piece))
         #TODO: Check si la piece est clouée
 
         #TODO: Check si le roi est en echec
